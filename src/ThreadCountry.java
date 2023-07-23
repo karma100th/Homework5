@@ -5,9 +5,10 @@ public class ThreadCountry extends Thread {
     private static volatile int totalRobots = 0;
     private static volatile boolean winnerFound = false;
 
-    public ThreadCountry(String name, RobotPart[] partsNeeded) {
+    public ThreadCountry(String name) {
         this.name = name;
-        this.partsNeeded = partsNeeded;
+        this.partsNeeded = new RobotPart[] {RobotPart.LEFT_ARM, RobotPart.RIGHT_ARM, RobotPart.LEFT_LEG,
+                RobotPart.RIGHT_LEG, RobotPart.BODY, RobotPart.HEAD};
         this.robot = new Robot(); // Создаем отдельного робота для каждой страны
     }
 
@@ -19,8 +20,10 @@ public class ThreadCountry extends Thread {
                 synchronized (robot) {
                     if (!winnerFound) {
                         RobotPart currentPart = getRandomPart();
-                        System.out.println(name + " получила часть: " + currentPart);
-                        robot.addPart();
+                        if (!robot.getPartsCollected().contains(currentPart)) {
+                            robot.addPart(currentPart);
+                            System.out.println(name + " получила часть: " + currentPart);
+                        }
                         if (robot.isComplete()) {
                             totalRobots++;
                             System.out.println(name + " собрала робота " + totalRobots);
